@@ -3,5 +3,8 @@
     <string name="app_name">Overseer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_settings">Settings</string>
+    
+    <string name="ERROR_USER_NOT_FOUND">User not found</string>
+    <string name="ERROR_USER_INACTIVE">User inactive</string>
+    <string name="ERROR_INVALID_PASSWORD">Invalid password</string>
 </resources>
