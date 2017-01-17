@@ -20,15 +20,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import pl.edu.pw.ee.overseer.R;
+import pl.edu.pw.ee.overseer.fragments.LocationFragment;
 import pl.edu.pw.ee.overseer.fragments.ProfileFragment;
+import pl.edu.pw.ee.overseer.services.LocationService;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private Activity mContext;
-
     private SharedPreferencesUtility mSharedPreferencesUtility;
+
+    private boolean isWorktime;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +41,24 @@ public class MainActivity extends AppCompatActivity
 
         mContext = this;
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
+        isWorktime = false;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (isWorktime) {
+                    mContext.stopService(new Intent(mContext, LocationService.class));
+                    fab.setImageResource(R.drawable.ic_briefcase);
+                    isWorktime = false;
+                } else {
+                    mContext.startService(new Intent(mContext, LocationService.class));
+                    fab.setImageResource(R.drawable.ic_home);
+                    isWorktime = true;
+                }
             }
         });
 
@@ -95,6 +107,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new ProfileFragment();
                 break;
             case R.id.nav_location:
+                fragment = new LocationFragment();
                 break;
             case R.id.nav_work_time:
                 break;
