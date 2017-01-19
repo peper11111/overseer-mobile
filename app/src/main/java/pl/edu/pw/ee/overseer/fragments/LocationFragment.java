@@ -38,6 +38,7 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
         View v = inflater.inflate(R.layout.fragment_location, container, false);
 
         mContext = getActivity();
+        mContext.setTitle("Location");
         mLocationUpdateReceiver = new LocationUpdateReceiver();
 
         mMapView = (MapView) v.findViewById(R.id.map_view);

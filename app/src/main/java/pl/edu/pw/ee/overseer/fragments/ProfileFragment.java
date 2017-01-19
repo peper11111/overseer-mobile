@@ -26,6 +26,7 @@ public class ProfileFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         mContext = getActivity();
+        mContext.setTitle("Profile");
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
 
         try {

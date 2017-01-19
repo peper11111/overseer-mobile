@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -22,7 +21,10 @@ import android.widget.TextView;
 import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.fragments.LocationFragment;
 import pl.edu.pw.ee.overseer.fragments.ProfileFragment;
+import pl.edu.pw.ee.overseer.fragments.StatisticsFragment;
 import pl.edu.pw.ee.overseer.services.LocationService;
+import pl.edu.pw.ee.overseer.tasks.StartTask;
+import pl.edu.pw.ee.overseer.tasks.StopTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
 
@@ -51,10 +53,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (isWorktime) {
+                    new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.stopService(new Intent(mContext, LocationService.class));
                     fab.setImageResource(R.drawable.ic_briefcase);
                     isWorktime = false;
                 } else {
+                    new StartTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.startService(new Intent(mContext, LocationService.class));
                     fab.setImageResource(R.drawable.ic_home);
                     isWorktime = true;
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_work_time:
                 break;
             case R.id.nav_statistics:
+                fragment = new StatisticsFragment();
                 break;
             case R.id.nav_subordinates:
                 break;

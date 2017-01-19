@@ -41,16 +41,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    JSONObject request = new JSONObject();
-                    request.put("username", mLoginUsername.getText().toString());
-                    request.put("password", mLoginPassword.getText().toString());
+                    JSONObject response = new AuthenticateTask().execute(mLoginUsername.getText().toString(), mLoginPassword.getText().toString()).get();
 
-                    JSONObject response = new AuthenticateTask().execute(request).get();
-
-                    if (response.getBoolean("authenticated")) {
+                    if (!response.has("error")) {
                         mSharedPreferencesUtility
                                 .putBoolean(SharedPreferencesUtility.KEY_AUTHENTICATED, true)
-                                .putString(SharedPreferencesUtility.KEY_USERNAME, request.getString("username"))
+                                .putString(SharedPreferencesUtility.KEY_USERNAME, mLoginUsername.getText().toString())
                                 .putString(SharedPreferencesUtility.KEY_TOKEN, response.getString("token"))
                                 .putString(SharedPreferencesUtility.KEY_NAME, response.getString("name"))
                                 .putString(SharedPreferencesUtility.KEY_EMAIL, response.getString("email"))

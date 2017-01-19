@@ -4,16 +4,18 @@ import android.os.AsyncTask;
 
 import org.json.JSONObject;
 
+import java.util.Date;
+
 import pl.edu.pw.ee.overseer.utilities.URLConnectionUtility;
 
-public class AuthenticateTask extends AsyncTask<String, Void, JSONObject> {
+public class StopTask extends AsyncTask<String, Void, JSONObject> {
     @Override
     protected JSONObject doInBackground(String... params) {
         try {
             JSONObject request = new JSONObject();
-            request.put("username", params[0]);
-            request.put("password", params[1]);
-            return URLConnectionUtility.doPost("/authenticate", request);
+            request.put("token", params[0]);
+            request.put("stop", new Date().getTime());
+            return URLConnectionUtility.doPost("/stop", request);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
