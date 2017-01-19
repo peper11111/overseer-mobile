@@ -10,7 +10,6 @@ public class SharedPreferencesUtility {
     private static final String NAME = "overseer";
     private static final int MODE = Context.MODE_PRIVATE;
 
-    public static final String KEY_AUTHENTICATED = "key-authenticated";
     public static final String KEY_USERNAME = "key-username";
     public static final String KEY_TOKEN = "key-token";
     public static final String KEY_NAME = "key-name";

@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="First And Last Name"
+        android:text="Name"
         android:textColor="@android:color/primary_text_light"
         android:textSize="24sp"
         android:textStyle="bold" />
@@ -30,7 +30,27 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:gravity="center"
-        android:text="android.studio@example.com" />
+        android:text="Email" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Phone"
+            android:textColor="@android:color/primary_text_light" />
+
+        <TextView
+            android:id="@+id/profile_phone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Phone" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -61,15 +81,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Rank"
+            android:text="Address"
             android:textColor="@android:color/primary_text_light" />
 
         <TextView
-            android:id="@+id/profile_rank"
+            android:id="@+id/profile_address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="Rank" />
+            android:text="Address" />
     </LinearLayout>
 
     <LinearLayout
@@ -81,15 +101,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Team"
+            android:text="Company"
             android:textColor="@android:color/primary_text_light" />
 
         <TextView
-            android:id="@+id/profile_team"
+            android:id="@+id/profile_company"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="Team" />
+            android:text="Company" />
     </LinearLayout>
 
     <LinearLayout
@@ -121,16 +141,57 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Company"
+            android:text="Team"
             android:textColor="@android:color/primary_text_light" />
 
         <TextView
-            android:id="@+id/profile_company"
+            android:id="@+id/profile_team"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="Company" />
+            android:text="Team" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Rank"
+            android:textColor="@android:color/primary_text_light" />
+
+        <TextView
+            android:id="@+id/profile_rank"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Rank" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Joined"
+            android:textColor="@android:color/primary_text_light" />
+
+        <TextView
+            android:id="@+id/profile_joined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Joined" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

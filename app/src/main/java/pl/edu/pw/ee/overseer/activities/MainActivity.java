@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_settings:
                 break;
             case R.id.nav_logout:
-                new SharedPreferencesUtility(mContext).remove(SharedPreferencesUtility.KEY_AUTHENTICATED).apply();
+                new SharedPreferencesUtility(mContext).remove(SharedPreferencesUtility.KEY_TOKEN).apply();
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 mContext.startActivity(intent);
                 mContext.finish();

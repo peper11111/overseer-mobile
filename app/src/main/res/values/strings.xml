@@ -4,8 +4,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="ERROR_USER_NOT_FOUND">User not found</string>
-    <string name="ERROR_USER_INACTIVE">User inactive</string>
-    <string name="ERROR_INVALID_PASSWORD">Invalid password</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="AUTHENTICATION_ERROR">Authentication error</string>
+    <string name="PASSWORD_ERROR">Invalid username or password</string>
 </resources>

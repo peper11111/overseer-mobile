@@ -12,40 +12,58 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import pl.edu.pw.ee.overseer.R;
+import pl.edu.pw.ee.overseer.tasks.ProfileTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
 
 public class ProfileFragment extends Fragment {
     private Activity mContext;
     private SharedPreferencesUtility mSharedPreferencesUtility;
+    private View mView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_profile, container, false);
+        mView = inflater.inflate(R.layout.fragment_profile, container, false);
 
         mContext = getActivity();
         mContext.setTitle("Profile");
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
 
         try {
-            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getResources(), ExternalStorageUtility.getFileInputStream("/avatar.png"));
-            drawable.setCornerRadius(150);
-            ((ImageView) v.findViewById(R.id.profile_avatar)).setImageDrawable(drawable);
+            if (ExternalStorageUtility.exists("profile.ovs"))
+                asyncTaskResponse(ExternalStorageUtility.readJSONObject("profile.ovs"));
+            else
+                new ProfileTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        ((TextView) v.findViewById(R.id.profile_name)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_NAME, "-"));
-        ((TextView) v.findViewById(R.id.profile_email)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_EMAIL, "-"));
-        ((TextView) v.findViewById(R.id.profile_mobile)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_MOBILE, "-"));
-        ((TextView) v.findViewById(R.id.profile_rank)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_RANK, "-"));
-        ((TextView) v.findViewById(R.id.profile_team)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TEAM, "-"));
-        ((TextView) v.findViewById(R.id.profile_department)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_DEPARTMENT, "-"));
-        ((TextView) v.findViewById(R.id.profile_company)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_COMPANY, "-"));
-        ((TextView) v.findViewById(R.id.profile_supervisor)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_SUPERVISOR, "-"));
+        return mView;
+    }
 
-        return v;
+    public void asyncTaskResponse(JSONObject response) {
+        try {
+            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getResources(), ExternalStorageUtility.getFileInputStream("/avatar.png"));
+            drawable.setCornerRadius(150);
+            ((ImageView) mView.findViewById(R.id.profile_avatar)).setImageDrawable(drawable);
+            ((TextView) mView.findViewById(R.id.profile_name)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_NAME, "-"));
+            ((TextView) mView.findViewById(R.id.profile_email)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_EMAIL, "-"));
+
+            ((TextView) mView.findViewById(R.id.profile_phone)).setText(response.getString("phone"));
+            ((TextView) mView.findViewById(R.id.profile_mobile)).setText(response.getString("mobile"));
+            ((TextView) mView.findViewById(R.id.profile_address)).setText(response.getString("address") + "\n" + response.getString("zip") + " " + response.getString("city"));
+            ((TextView) mView.findViewById(R.id.profile_company)).setText(response.getString("company"));
+            ((TextView) mView.findViewById(R.id.profile_department)).setText(response.getString("department"));
+            ((TextView) mView.findViewById(R.id.profile_team)).setText(response.getString("team"));
+            ((TextView) mView.findViewById(R.id.profile_rank)).setText(response.getString("rank"));
+            ((TextView) mView.findViewById(R.id.profile_joined)).setText(response.getString("joined"));
+            ((TextView) mView.findViewById(R.id.profile_supervisor)).setText(response.getString("supervisor"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

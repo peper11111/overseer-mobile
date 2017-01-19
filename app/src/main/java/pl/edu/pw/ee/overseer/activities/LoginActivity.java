@@ -1,29 +1,25 @@
 package pl.edu.pw.ee.overseer.activities;
 
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import org.json.JSONObject;
 
 import pl.edu.pw.ee.overseer.R;
-import pl.edu.pw.ee.overseer.tasks.AuthenticateTask;
+import pl.edu.pw.ee.overseer.tasks.LoginTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
 import pl.edu.pw.ee.overseer.utilities.ToastUtility;
 
 public class LoginActivity extends AppCompatActivity {
-    private Activity mContext;
+    private LoginActivity mContext;
+    private SharedPreferencesUtility mSharedPreferencesUtility;
+
     private EditText mLoginUsername;
     private EditText mLoginPassword;
-    private Button mLoginButton;
-
-    private SharedPreferencesUtility mSharedPreferencesUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,49 +31,42 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginUsername = (EditText) findViewById(R.id.login_username);
         mLoginPassword = (EditText) findViewById(R.id.login_password);
-        mLoginButton = (Button) findViewById(R.id.login_button);
-
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    JSONObject response = new AuthenticateTask().execute(mLoginUsername.getText().toString(), mLoginPassword.getText().toString()).get();
-
-                    if (!response.has("error")) {
-                        mSharedPreferencesUtility
-                                .putBoolean(SharedPreferencesUtility.KEY_AUTHENTICATED, true)
-                                .putString(SharedPreferencesUtility.KEY_USERNAME, mLoginUsername.getText().toString())
-                                .putString(SharedPreferencesUtility.KEY_TOKEN, response.getString("token"))
-                                .putString(SharedPreferencesUtility.KEY_NAME, response.getString("name"))
-                                .putString(SharedPreferencesUtility.KEY_EMAIL, response.getString("email"))
-                                .putString(SharedPreferencesUtility.KEY_MOBILE, response.getString("mobile"))
-                                .putString(SharedPreferencesUtility.KEY_RANK, response.getString("rank"))
-                                .putString(SharedPreferencesUtility.KEY_TEAM, response.getString("team"))
-                                .putString(SharedPreferencesUtility.KEY_DEPARTMENT, response.getString("department"))
-                                .putString(SharedPreferencesUtility.KEY_COMPANY, response.getString("company"))
-                                .putString(SharedPreferencesUtility.KEY_SUPERVISOR, response.getString("supervisor"))
-                                .apply();
-
-                        ExternalStorageUtility.createRootFolder();
-                        ExternalStorageUtility.writeImage("avatar.png", response.getString("avatar"));
-
-                        Intent intent = new Intent(mContext, MainActivity.class);
-                        mContext.startActivity(intent);
-                        mContext.finish();
-                    } else {
-                        ToastUtility.makeError(mContext, response.getString("error"));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                new LoginTask(mContext).execute(mLoginUsername.getText().toString(), mLoginPassword.getText().toString());
             }
         });
+    }
+
+    public void asyncTaskResponse(JSONObject response) {
+        try {
+            if (!response.has("error")) {
+                mSharedPreferencesUtility
+                        .putString(SharedPreferencesUtility.KEY_TOKEN, response.getString("token"))
+                        .putString(SharedPreferencesUtility.KEY_USERNAME, mLoginUsername.getText().toString())
+                        .putString(SharedPreferencesUtility.KEY_NAME, response.getString("name"))
+                        .putString(SharedPreferencesUtility.KEY_EMAIL, response.getString("email"))
+                        .apply();
+
+                ExternalStorageUtility.createRootFolder();
+                ExternalStorageUtility.writeImage("avatar.png", response.getString("avatar"));
+
+                Intent intent = new Intent(mContext, MainActivity.class);
+                mContext.startActivity(intent);
+                mContext.finish();
+            } else {
+                ToastUtility.makeError(mContext, response.getString("error"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (mSharedPreferencesUtility.getBoolean(SharedPreferencesUtility.KEY_AUTHENTICATED, false)) {
+        if (mSharedPreferencesUtility.contains(SharedPreferencesUtility.KEY_TOKEN)) {
             Intent intent = new Intent(mContext, MainActivity.class);
             mContext.startActivity(intent);
             mContext.finish();
