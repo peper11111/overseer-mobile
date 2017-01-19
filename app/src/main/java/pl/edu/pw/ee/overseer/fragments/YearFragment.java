@@ -10,33 +10,23 @@ import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.LineChart;
 
 import pl.edu.pw.ee.overseer.R;
-import pl.edu.pw.ee.overseer.utilities.LineChartUtility;
+import pl.edu.pw.ee.overseer.utilities.ChartUtility;
 
 public class YearFragment extends Fragment {
-    private LineChart mLineChart;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_year, container, false);
-
-        mLineChart = (LineChart) v.findViewById(R.id.year_chart);
-
         StatisticsFragment parent = (StatisticsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
         try {
-            LineChartUtility.createChart(parent.mStatistics.getJSONObject("year"), parent.mHistory.getJSONObject("year"), mLineChart);
-            mLineChart.invalidate();
+            LineChart lineChart = (LineChart) v.findViewById(R.id.year_chart);
+            ChartUtility.createLineChart(parent.mStatistics.getJSONObject("year"), parent.mHistory.getJSONObject("year"), lineChart);
+            lineChart.invalidate();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return v;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mLineChart.invalidate();
     }
 }

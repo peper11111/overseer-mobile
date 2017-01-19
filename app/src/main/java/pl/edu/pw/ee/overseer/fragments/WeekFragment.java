@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.LineChart;
 
 import pl.edu.pw.ee.overseer.R;
-import pl.edu.pw.ee.overseer.utilities.LineChartUtility;
+import pl.edu.pw.ee.overseer.utilities.ChartUtility;
 
 public class WeekFragment extends Fragment {
     private LineChart mLineChart;
@@ -25,7 +25,7 @@ public class WeekFragment extends Fragment {
         StatisticsFragment parent = (StatisticsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
         try {
-            LineChartUtility.createChart(parent.mStatistics.getJSONObject("week"), parent.mHistory.getJSONObject("week"), mLineChart);
+            ChartUtility.createLineChart(parent.mStatistics.getJSONObject("week"), parent.mHistory.getJSONObject("week"), mLineChart);
             mLineChart.invalidate();
         } catch (Exception e) {
             e.printStackTrace();

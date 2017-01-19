@@ -22,7 +22,9 @@ import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.fragments.LocationFragment;
 import pl.edu.pw.ee.overseer.fragments.ProfileFragment;
 import pl.edu.pw.ee.overseer.fragments.StatisticsFragment;
+import pl.edu.pw.ee.overseer.fragments.WorktimeFragment;
 import pl.edu.pw.ee.overseer.services.LocationService;
+import pl.edu.pw.ee.overseer.services.WorktimeService;
 import pl.edu.pw.ee.overseer.tasks.StartTask;
 import pl.edu.pw.ee.overseer.tasks.StopTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
@@ -55,11 +57,13 @@ public class MainActivity extends AppCompatActivity
                 if (isWorktime) {
                     new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.stopService(new Intent(mContext, LocationService.class));
+                    mContext.stopService(new Intent(mContext, WorktimeService.class));
                     fab.setImageResource(R.drawable.ic_briefcase);
                     isWorktime = false;
                 } else {
                     new StartTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.startService(new Intent(mContext, LocationService.class));
+                    mContext.startService(new Intent(mContext, WorktimeService.class));
                     fab.setImageResource(R.drawable.ic_home);
                     isWorktime = true;
                 }
@@ -113,7 +117,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_location:
                 fragment = new LocationFragment();
                 break;
-            case R.id.nav_work_time:
+            case R.id.nav_worktime:
+                fragment = new WorktimeFragment();
                 break;
             case R.id.nav_statistics:
                 fragment = new StatisticsFragment();

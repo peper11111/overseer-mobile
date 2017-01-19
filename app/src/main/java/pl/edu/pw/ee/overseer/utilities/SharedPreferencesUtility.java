@@ -21,6 +21,7 @@ public class SharedPreferencesUtility {
     public static final String KEY_DEPARTMENT = "key-department";
     public static final String KEY_COMPANY = "key-company";
     public static final String KEY_SUPERVISOR = "key-supervisor";
+    public static final String KEY_TIMER = "key-timer";
 
     private SharedPreferences mSharedPreferences = null;
     private Editor mEditor = null;

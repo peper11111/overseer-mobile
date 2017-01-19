@@ -24,6 +24,7 @@
             android:label="@string/app_name" />
 
         <service android:name=".services.LocationService" />
+        <service android:name=".services.WorktimeService" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
