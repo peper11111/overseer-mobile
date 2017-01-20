@@ -22,6 +22,7 @@ import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.fragments.LocationFragment;
 import pl.edu.pw.ee.overseer.fragments.ProfileFragment;
 import pl.edu.pw.ee.overseer.fragments.StatisticsFragment;
+import pl.edu.pw.ee.overseer.fragments.SubordinatesFragment;
 import pl.edu.pw.ee.overseer.fragments.WorkTimeFragment;
 import pl.edu.pw.ee.overseer.services.LocationService;
 import pl.edu.pw.ee.overseer.services.WorkTimeService;
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new StatisticsFragment();
                 break;
             case R.id.nav_subordinates:
+                fragment = new SubordinatesFragment();
                 break;
             case R.id.nav_settings:
                 break;

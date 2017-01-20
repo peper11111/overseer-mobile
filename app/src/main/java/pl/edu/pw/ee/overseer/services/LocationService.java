@@ -15,13 +15,22 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.Date;
+
+import pl.edu.pw.ee.overseer.tasks.LocationTask;
+import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
+
 public class LocationService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    private static final long INTERVAL = 1000 * 5; //5s
+    private static final long INTERVAL = 1000 * 30; //30s
 
     public static final String ACTION_NEW_LOCATION = "NEW_LOCATION";
 
     private GoogleApiClient mGoogleApiClient = null;
     private LocationRequest mLocationRequest = null;
+
+    private SharedPreferencesUtility mSharedPreferencesUtility = null;
+
+    private long lastUpdate;
 
     @Nullable
     @Override
@@ -35,6 +44,8 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         buildGoogleApiClient();
         createLocationRequest();
         mGoogleApiClient.connect();
+        mSharedPreferencesUtility = new SharedPreferencesUtility(this);
+        mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_UPDATE, 0);
     }
 
     @Override
@@ -43,6 +54,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
             stopLocationUpdates();
         }
         mGoogleApiClient.disconnect();
+        mSharedPreferencesUtility.putLong(SharedPreferencesUtility.KEY_UPDATE, lastUpdate).apply();
         super.onDestroy();
     }
 
@@ -57,12 +69,12 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     }
 
     private void startLocationUpdates() {
-        Log.d("OVERSEER","Location Updates Started");
+        Log.d("OVERSEER", "Location Updates Started");
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
     private void stopLocationUpdates() {
-        Log.d("OVERSEER","Location Updates Stopped");
+        Log.d("OVERSEER", "Location Updates Stopped");
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
@@ -83,7 +95,12 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onLocationChanged(Location location) {
-        //TODO Logika po otrzymaniu lokalizacji
+        long now = new Date().getTime();
+        if (now - lastUpdate > 900000) { //15min
+            new LocationTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""), "" + location.getLatitude(), "" + location.getLongitude(), "" + now);
+            lastUpdate = now;
+        }
+
         Intent intent = new Intent();
         intent.setAction(ACTION_NEW_LOCATION);
         intent.putExtra("location", location);

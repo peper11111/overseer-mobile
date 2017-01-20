@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/subordinate_avatar"
+        android:layout_width="48dp"
+        android:layout_marginRight="8dp"
+        android:layout_height="48dp"
+        android:src="@drawable/overseer" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/subordinate_name"
+            android:gravity="fill_vertical"
+            android:layout_width="match_parent"
+            android:text="Piotr Pleban"
+            android:layout_height="0dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/primary_text_light"
+            android:layout_weight="3" />
+
+        <TextView
+            android:text="piotr.pleban@atendesoftware.pl"
+            android:id="@+id/subordinate_email"
+            android:gravity="fill_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2" />
+    </LinearLayout>
+</LinearLayout>
