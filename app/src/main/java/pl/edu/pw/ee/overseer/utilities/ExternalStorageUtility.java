@@ -8,11 +8,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 public class ExternalStorageUtility {
     private static final File ROOT = new File(Environment.getExternalStorageDirectory(), "Overseer");
@@ -40,22 +44,28 @@ public class ExternalStorageUtility {
         return file.exists();
     }
 
+    public static boolean delete(String path) {
+        File file = new File(ROOT, path);
+        return !file.exists() || file.delete();
+    }
+
     public static void saveJSONObject(String path, JSONObject jsonObject) throws IOException {
         File file = new File(ROOT, path);
         if (file.exists())
             file.delete();
 
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write(jsonObject.toString().getBytes());
-        fileOutputStream.close();
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+        outputStreamWriter.write(jsonObject.toString());
+        outputStreamWriter.close();
     }
 
     public static JSONObject readJSONObject(String path) throws IOException, JSONException {
         File file = new File(ROOT, path);
         String result = "";
-        FileInputStream fileInputStream = new FileInputStream(file);
-        while (fileInputStream.available() > 0) {
-            result += String.valueOf((char) fileInputStream.read());
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+        int c;
+        while ((c = inputStreamReader.read()) > 0) {
+            result += String.valueOf((char) c);
         }
         return new JSONObject(result);
     }

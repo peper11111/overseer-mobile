@@ -1,0 +1,76 @@
+package pl.edu.pw.ee.overseer.services;
+
+import android.app.Service;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
+
+public class WorkTimeService extends Service {
+    public static final String ACTION_NEW_TIME = "NEW_TIME";
+
+    private Handler mHandler;
+    private SharedPreferencesUtility mSharedPreferencesUtility;
+
+    private long mDiff;
+    private long mStart;
+    private Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            long now = new Date().getTime();
+
+            long millis = (now - mStart) + mDiff;
+
+            Intent intent = new Intent();
+            intent.setAction(ACTION_NEW_TIME);
+            intent.putExtra("millis", millis);
+            sendBroadcast(intent);
+            mHandler.postDelayed(this, 500);
+        }
+    };
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mSharedPreferencesUtility = new SharedPreferencesUtility(this);
+        mHandler = new Handler();
+
+        long old = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_TIME, new Date().getTime());
+        if (!compareDates(old))
+            mSharedPreferencesUtility.putLong(SharedPreferencesUtility.KEY_DIFF, 0).apply();
+
+        mDiff = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_DIFF, 0);
+        mStart = new Date().getTime();
+        mHandler.postDelayed(timer, 0);
+    }
+
+    private boolean compareDates(long old) {
+        Calendar calendar = Calendar.getInstance();
+        int now = calendar.get(Calendar.DATE);
+        calendar.setTimeInMillis(old);
+        int past = calendar.get(Calendar.DATE);
+        return now == past;
+    }
+
+    @Override
+    public void onDestroy() {
+        mHandler.removeCallbacks(timer);
+        mDiff += new Date().getTime() - mStart;
+        mSharedPreferencesUtility
+                .putLong(SharedPreferencesUtility.KEY_DIFF, mDiff)
+                .putLong(SharedPreferencesUtility.KEY_TIME, mStart)
+                .apply();
+        super.onDestroy();
+    }
+}

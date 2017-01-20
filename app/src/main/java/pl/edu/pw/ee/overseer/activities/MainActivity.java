@@ -22,9 +22,9 @@ import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.fragments.LocationFragment;
 import pl.edu.pw.ee.overseer.fragments.ProfileFragment;
 import pl.edu.pw.ee.overseer.fragments.StatisticsFragment;
-import pl.edu.pw.ee.overseer.fragments.WorktimeFragment;
+import pl.edu.pw.ee.overseer.fragments.WorkTimeFragment;
 import pl.edu.pw.ee.overseer.services.LocationService;
-import pl.edu.pw.ee.overseer.services.WorktimeService;
+import pl.edu.pw.ee.overseer.services.WorkTimeService;
 import pl.edu.pw.ee.overseer.tasks.StartTask;
 import pl.edu.pw.ee.overseer.tasks.StopTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
@@ -57,13 +57,13 @@ public class MainActivity extends AppCompatActivity
                 if (isWorktime) {
                     new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.stopService(new Intent(mContext, LocationService.class));
-                    mContext.stopService(new Intent(mContext, WorktimeService.class));
+                    mContext.stopService(new Intent(mContext, WorkTimeService.class));
                     fab.setImageResource(R.drawable.ic_briefcase);
                     isWorktime = false;
                 } else {
                     new StartTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.startService(new Intent(mContext, LocationService.class));
-                    mContext.startService(new Intent(mContext, WorktimeService.class));
+                    mContext.startService(new Intent(mContext, WorkTimeService.class));
                     fab.setImageResource(R.drawable.ic_home);
                     isWorktime = true;
                 }
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            mContext.moveTaskToBack(true);
         }
     }
 
@@ -117,8 +117,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_location:
                 fragment = new LocationFragment();
                 break;
-            case R.id.nav_worktime:
-                fragment = new WorktimeFragment();
+            case R.id.nav_work_time:
+                fragment = new WorkTimeFragment();
                 break;
             case R.id.nav_statistics:
                 fragment = new StatisticsFragment();
@@ -128,10 +128,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_settings:
                 break;
             case R.id.nav_logout:
-                new SharedPreferencesUtility(mContext).remove(SharedPreferencesUtility.KEY_TOKEN).apply();
-                Intent intent = new Intent(mContext, LoginActivity.class);
-                mContext.startActivity(intent);
-                mContext.finish();
+                logout();
                 break;
         }
 
@@ -141,5 +138,20 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void logout() {
+        new SharedPreferencesUtility(mContext)
+                .remove(SharedPreferencesUtility.KEY_TOKEN)
+                .remove(SharedPreferencesUtility.KEY_DIFF)
+                .remove(SharedPreferencesUtility.KEY_TIME)
+                .apply();
+        ExternalStorageUtility.delete("profile.ovs");
+        ExternalStorageUtility.delete("statistics.ovs");
+        if (isWorktime)
+            fab.performClick();
+        Intent intent = new Intent(mContext, LoginActivity.class);
+        mContext.startActivity(intent);
+        mContext.finish();
     }
 }

@@ -12,9 +12,9 @@
             android:icon="@drawable/ic_map_marker"
             android:title="Location" />
         <item
-            android:id="@+id/nav_worktime"
+            android:id="@+id/nav_work_time"
             android:icon="@drawable/ic_clock"
-            android:title="Worktime" />
+            android:title="Work Time" />
         <item
             android:id="@+id/nav_statistics"
             android:icon="@drawable/ic_chart_areaspline"

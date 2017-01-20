@@ -14,13 +14,8 @@ public class SharedPreferencesUtility {
     public static final String KEY_TOKEN = "key-token";
     public static final String KEY_NAME = "key-name";
     public static final String KEY_EMAIL = "key-email";
-    public static final String KEY_MOBILE = "key-mobile";
-    public static final String KEY_RANK = "key-rank";
-    public static final String KEY_TEAM = "key-team";
-    public static final String KEY_DEPARTMENT = "key-department";
-    public static final String KEY_COMPANY = "key-company";
-    public static final String KEY_SUPERVISOR = "key-supervisor";
-    public static final String KEY_TIMER = "key-timer";
+    public static final String KEY_DIFF = "key-diff";
+    public static final String KEY_TIME = "key-time";
 
     private SharedPreferences mSharedPreferences = null;
     private Editor mEditor = null;

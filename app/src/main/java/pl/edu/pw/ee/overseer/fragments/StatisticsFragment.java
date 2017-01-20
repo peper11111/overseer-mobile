@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.adapters.StatisticsTabAdapter;
-import pl.edu.pw.ee.overseer.tasks.HistoryTask;
 import pl.edu.pw.ee.overseer.tasks.StatisticsTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
@@ -22,9 +21,9 @@ import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
 public class StatisticsFragment extends Fragment {
     private Activity mContext;
     private SharedPreferencesUtility mSharedPreferencesUtility;
+    private ViewPager mViewPager;
 
-    public JSONObject mStatistics;
-    public JSONObject mHistory;
+    public JSONObject mStatistics = null;
 
     @Nullable
     @Override
@@ -35,21 +34,29 @@ public class StatisticsFragment extends Fragment {
         mContext.setTitle("Statistics");
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
 
+        StatisticsTabAdapter statisticsTabAdapter = new StatisticsTabAdapter(getChildFragmentManager());
+
+        mViewPager = (ViewPager) v.findViewById(R.id.view_pager);
+        mViewPager.setAdapter(statisticsTabAdapter);
+
+        TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(mViewPager);
+
         try {
-            mStatistics = new StatisticsTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, "")).get();
-            mHistory = new HistoryTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, "")).get();
+            new StatisticsTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+//            if (ExternalStorageUtility.exists("statistics.ovs"))
+//                asyncTaskResponse(ExternalStorageUtility.readJSONObject("statistics.ovs"));
+//            else
+//                new StatisticsTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        StatisticsTabAdapter statisticsTabAdapter = new StatisticsTabAdapter(getChildFragmentManager());
-
-        ViewPager viewPager = (ViewPager) v.findViewById(R.id.view_pager);
-        viewPager.setAdapter(statisticsTabAdapter);
-
-        TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
-        tabLayout.setupWithViewPager(viewPager);
-
         return v;
+    }
+
+    public void asyncTaskResponse(JSONObject response) {
+        mStatistics = response;
+        mViewPager.getAdapter().notifyDataSetChanged();
     }
 }
