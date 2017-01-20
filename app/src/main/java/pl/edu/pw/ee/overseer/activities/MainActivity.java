@@ -1,13 +1,18 @@
 package pl.edu.pw.ee.overseer.activities;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +25,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Date;
+import java.util.List;
+
 import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.fragments.LocationFragment;
 import pl.edu.pw.ee.overseer.fragments.ProfileFragment;
@@ -28,7 +36,6 @@ import pl.edu.pw.ee.overseer.fragments.SubordinatesFragment;
 import pl.edu.pw.ee.overseer.fragments.WorkTimeFragment;
 import pl.edu.pw.ee.overseer.services.LocationService;
 import pl.edu.pw.ee.overseer.services.WorkTimeService;
-import pl.edu.pw.ee.overseer.tasks.StartTask;
 import pl.edu.pw.ee.overseer.tasks.StopTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
@@ -38,7 +45,6 @@ public class MainActivity extends AppCompatActivity
     private Activity mContext;
     private SharedPreferencesUtility mSharedPreferencesUtility;
 
-    private boolean isActive;
     private FloatingActionButton fab;
 
     @Override
@@ -48,7 +54,15 @@ public class MainActivity extends AppCompatActivity
 
         mContext = this;
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
-        isActive = false;
+
+        long start = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_TIME, new Date().getTime());
+        long diff = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_DIFF, 0);
+        long lastTime = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_WORK, 0);
+        if (lastTime != 0) {
+            new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""), "" + lastTime);
+            diff += lastTime - start;
+            mSharedPreferencesUtility.putLong(SharedPreferencesUtility.KEY_DIFF, diff).apply();
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,16 +71,14 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isActive) {
+                if (isServiceRunning("pl.edu.pw.ee.overseer.services.WorkTimeService")) {
                     mContext.stopService(new Intent(mContext, LocationService.class));
                     mContext.stopService(new Intent(mContext, WorkTimeService.class));
                     fab.setImageResource(R.drawable.ic_briefcase);
-                    isActive = false;
                 } else {
                     mContext.startService(new Intent(mContext, LocationService.class));
                     mContext.startService(new Intent(mContext, WorkTimeService.class));
                     fab.setImageResource(R.drawable.ic_home);
-                    isActive = true;
                 }
             }
         });
@@ -96,26 +108,50 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private boolean isServiceRunning(String name) {
+        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
+        for (ActivityManager.RunningServiceInfo service : services) {
+            if (service.service.getClassName().equals(name))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-        isActive = mSharedPreferencesUtility.getBoolean(SharedPreferencesUtility.KEY_RUNNING, false);
-        if(isActive) {
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(123123123);
+        if (isServiceRunning("pl.edu.pw.ee.overseer.services.WorkTimeService")) {
             fab.setImageResource(R.drawable.ic_home);
         }
     }
 
     @Override
     protected void onStop() {
-        mSharedPreferencesUtility.putBoolean(SharedPreferencesUtility.KEY_RUNNING, isActive);
+        if (isServiceRunning("pl.edu.pw.ee.overseer.services.WorkTimeService")) {
+            buildNotification();
+        }
         super.onStop();
     }
 
-    @Override
-    protected void onDestroy() {
-        if (isActive)
-            fab.performClick();
-        super.onDestroy();
+    private void buildNotification() {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.notification)
+                .setContentTitle("Overseer")
+                .setContentText("Overseer is running in the background");
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(123123123, mBuilder.build());
     }
 
     @Override
@@ -166,8 +202,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void logout() {
-        if (isActive)
+        if (isServiceRunning("pl.edu.pw.ee.overseer.services.WorkTimeService")) {
             fab.performClick();
+        }
+
         new SharedPreferencesUtility(mContext)
                 .remove(SharedPreferencesUtility.KEY_UPDATE)
                 .remove(SharedPreferencesUtility.KEY_TOKEN)

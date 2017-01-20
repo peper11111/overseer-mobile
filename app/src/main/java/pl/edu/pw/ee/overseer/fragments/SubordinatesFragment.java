@@ -67,12 +67,11 @@ public class SubordinatesFragment extends Fragment {
             mInfo.setVisibility(View.GONE);
 
         try {
+            if (ExternalStorageUtility.exists("subordinates.ovs"))
+                asyncTaskResponse(ExternalStorageUtility.readJSONObject("subordinates.ovs"));
+
             if (URLConnectionUtility.isNetworkAvaliable(mContext))
                 new SubordinatesTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
-            else if (ExternalStorageUtility.exists("subordinates.ovs"))
-                asyncTaskResponse(ExternalStorageUtility.readJSONObject("subordinates.ovs"));
-            else
-                ToastUtility.makeError(mContext, "NETWORK_ERROR");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,6 +81,7 @@ public class SubordinatesFragment extends Fragment {
 
     public void asyncTaskResponse(JSONObject response) {
         try {
+            mAdapter.clear();
             JSONArray array = response.getJSONArray("subordinates");
             for (int i = 0; i < array.length(); i++) {
                 mAdapter.add(array.getJSONObject(i));

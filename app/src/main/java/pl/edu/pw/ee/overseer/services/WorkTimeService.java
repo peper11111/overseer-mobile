@@ -25,8 +25,8 @@ public class WorkTimeService extends Service {
         @Override
         public void run() {
             long now = new Date().getTime();
-
             long millis = (now - mStart) + mDiff;
+            mSharedPreferencesUtility.putLong(SharedPreferencesUtility.KEY_WORK, now).apply();
 
             Intent intent = new Intent();
             intent.setAction(ACTION_NEW_TIME);
@@ -46,16 +46,18 @@ public class WorkTimeService extends Service {
     public void onCreate() {
         super.onCreate();
         mSharedPreferencesUtility = new SharedPreferencesUtility(this);
-        new StartTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
 
+        mStart = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_TIME, new Date().getTime());
+        mDiff = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_DIFF, 0);
+
+        new StartTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
         mHandler = new Handler();
 
-        long old = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_TIME, new Date().getTime());
-        if (!compareDates(old))
+        if (!compareDates(mStart))
             mSharedPreferencesUtility.putLong(SharedPreferencesUtility.KEY_DIFF, 0).apply();
 
-        mDiff = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_DIFF, 0);
         mStart = new Date().getTime();
+        mSharedPreferencesUtility.putLong(SharedPreferencesUtility.KEY_TIME, mStart).apply();
         mHandler.postDelayed(timer, 0);
     }
 
@@ -71,10 +73,10 @@ public class WorkTimeService extends Service {
     public void onDestroy() {
         mHandler.removeCallbacks(timer);
         mDiff += new Date().getTime() - mStart;
-        new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+        new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""), "" + new Date().getTime());
         mSharedPreferencesUtility
                 .putLong(SharedPreferencesUtility.KEY_DIFF, mDiff)
-                .putLong(SharedPreferencesUtility.KEY_TIME, mStart)
+                .putLong(SharedPreferencesUtility.KEY_WORK, 0)
                 .apply();
         super.onDestroy();
     }

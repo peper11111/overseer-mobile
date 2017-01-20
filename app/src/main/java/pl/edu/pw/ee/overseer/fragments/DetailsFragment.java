@@ -52,12 +52,11 @@ public class DetailsFragment extends Fragment {
         tabLayout.setupWithViewPager(mViewPager);
 
         try {
+            if (ExternalStorageUtility.exists("detail/detail_" + mSubordinate.getJSONObject("profile").get("id") + ".ovs"))
+                asyncTaskResponse(ExternalStorageUtility.readJSONObject("detail/detail_" + mSubordinate.getJSONObject("profile").get("id") + ".ovs"));
+
             if (URLConnectionUtility.isNetworkAvaliable(mContext))
                 new DetailsTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""),mSubordinate.getJSONObject("profile").getString("id"));
-            else if (ExternalStorageUtility.exists("detail/detail_" + mSubordinate.getJSONObject("profile").get("id") + ".ovs"))
-                asyncTaskResponse(ExternalStorageUtility.readJSONObject("detail/detail_" + mSubordinate.getJSONObject("profile").get("id") + ".ovs"));
-            else
-                ToastUtility.makeError(mContext, "NETWORK_ERROR");
 
         } catch (Exception e) {
             e.printStackTrace();

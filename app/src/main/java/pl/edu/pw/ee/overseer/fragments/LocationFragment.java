@@ -111,6 +111,5 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
     private void updateMapPosition(Location location) {
         if (mGoogleMap != null)
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
-        ToastUtility.makeText(mContext, "New Location obtained");
     }
 }

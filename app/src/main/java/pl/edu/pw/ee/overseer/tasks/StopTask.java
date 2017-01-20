@@ -14,7 +14,7 @@ public class StopTask extends AsyncTask<String, Void, JSONObject> {
         try {
             JSONObject request = new JSONObject();
             request.put("token", params[0]);
-            request.put("stop", new Date().getTime());
+            request.put("stop", params[1]);
             return URLConnectionUtility.doPost("/stop", request);
         } catch (Exception e) {
             e.printStackTrace();

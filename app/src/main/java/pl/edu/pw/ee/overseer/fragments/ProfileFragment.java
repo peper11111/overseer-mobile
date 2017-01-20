@@ -36,13 +36,11 @@ public class ProfileFragment extends Fragment {
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
 
         try {
+            if(ExternalStorageUtility.exists("profile.ovs"))
+                asyncTaskResponse(ExternalStorageUtility.readJSONObject("profile.ovs"));
+
             if(URLConnectionUtility.isNetworkAvaliable(mContext))
                 new ProfileTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
-            else if(ExternalStorageUtility.exists("profile.ovs"))
-                asyncTaskResponse(ExternalStorageUtility.readJSONObject("profile.ovs"));
-            else
-                ToastUtility.makeError(mContext,"NETWORK_ERROR");
-
         } catch (Exception e) {
             e.printStackTrace();
         }

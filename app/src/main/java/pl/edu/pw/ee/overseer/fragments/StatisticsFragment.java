@@ -46,12 +46,11 @@ public class StatisticsFragment extends Fragment {
         tabLayout.setupWithViewPager(mViewPager);
 
         try {
+            if(ExternalStorageUtility.exists("statistics.ovs"))
+                asyncTaskResponse(ExternalStorageUtility.readJSONObject("statistics.ovs"));
+
             if(URLConnectionUtility.isNetworkAvaliable(mContext))
                 new StatisticsTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
-            else if(ExternalStorageUtility.exists("statistics.ovs"))
-                asyncTaskResponse(ExternalStorageUtility.readJSONObject("statistics.ovs"));
-            else
-                ToastUtility.makeError(mContext,"NETWORK_ERROR");
         } catch (Exception e) {
             e.printStackTrace();
         }

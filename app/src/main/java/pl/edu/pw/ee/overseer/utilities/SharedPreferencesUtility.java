@@ -17,7 +17,7 @@ public class SharedPreferencesUtility {
     public static final String KEY_DIFF = "key-diff";
     public static final String KEY_TIME = "key-time";
     public static final String KEY_UPDATE = "key-update";
-    public static final String KEY_RUNNING = "key-running";
+    public static final String KEY_WORK = "key-work";
 
     private SharedPreferences mSharedPreferences = null;
     private Editor mEditor = null;
