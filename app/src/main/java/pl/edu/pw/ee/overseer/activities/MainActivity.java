@@ -130,8 +130,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_subordinates:
                 fragment = new SubordinatesFragment();
                 break;
-            case R.id.nav_settings:
-                break;
             case R.id.nav_logout:
                 logout();
                 break;
