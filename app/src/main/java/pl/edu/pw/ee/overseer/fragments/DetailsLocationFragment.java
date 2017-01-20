@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -43,6 +44,21 @@ public class DetailsLocationFragment extends Fragment {
         mAdapter = new LocationListAdapter(getContext(), R.layout.list_item_location, locations);
         ListView listView = (ListView) v.findViewById(R.id.list_view);
         listView.setAdapter(mAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                JSONObject jsonObject = mAdapter.getItem(position);
+                Bundle bundle = new Bundle();
+                bundle.putString("location", jsonObject.toString());
+
+                Fragment fragment = new DetailsPositionFragment();
+                fragment.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.fragment_container, fragment).commit();
+
+            }
+        });
 
         mInfo = (TextView) v.findViewById(R.id.empty_list);
 

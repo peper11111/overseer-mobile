@@ -17,7 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class URLConnectionUtility {
-    private static final String HOST = "http://78.11.142.138:8080";
+    private static final String HOST = "http://78.11.142.138:9999";
 
     public static JSONObject doPost(String path, JSONObject request) throws IOException, JSONException {
         URL url = new URL(HOST + path);
