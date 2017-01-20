@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import java.util.Calendar;
 import java.util.Date;
 
+import pl.edu.pw.ee.overseer.tasks.StartTask;
+import pl.edu.pw.ee.overseer.tasks.StopTask;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
 
 public class WorkTimeService extends Service {
@@ -44,6 +46,8 @@ public class WorkTimeService extends Service {
     public void onCreate() {
         super.onCreate();
         mSharedPreferencesUtility = new SharedPreferencesUtility(this);
+        new StartTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+
         mHandler = new Handler();
 
         long old = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_TIME, new Date().getTime());
@@ -67,6 +71,7 @@ public class WorkTimeService extends Service {
     public void onDestroy() {
         mHandler.removeCallbacks(timer);
         mDiff += new Date().getTime() - mStart;
+        new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
         mSharedPreferencesUtility
                 .putLong(SharedPreferencesUtility.KEY_DIFF, mDiff)
                 .putLong(SharedPreferencesUtility.KEY_TIME, mStart)

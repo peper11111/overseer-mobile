@@ -3,6 +3,7 @@ package pl.edu.pw.ee.overseer.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -57,13 +58,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (isActive) {
-                    new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.stopService(new Intent(mContext, LocationService.class));
                     mContext.stopService(new Intent(mContext, WorkTimeService.class));
                     fab.setImageResource(R.drawable.ic_briefcase);
                     isActive = false;
                 } else {
-                    new StartTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.startService(new Intent(mContext, LocationService.class));
                     mContext.startService(new Intent(mContext, WorkTimeService.class));
                     fab.setImageResource(R.drawable.ic_home);
@@ -95,6 +94,28 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isActive = mSharedPreferencesUtility.getBoolean(SharedPreferencesUtility.KEY_RUNNING, false);
+        if(isActive) {
+            fab.setImageResource(R.drawable.ic_home);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        mSharedPreferencesUtility.putBoolean(SharedPreferencesUtility.KEY_RUNNING, isActive);
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isActive)
+            fab.performClick();
+        super.onDestroy();
     }
 
     @Override
