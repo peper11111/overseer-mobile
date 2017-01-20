@@ -13,6 +13,7 @@ import pl.edu.pw.ee.overseer.tasks.LoginTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
 import pl.edu.pw.ee.overseer.utilities.ToastUtility;
+import pl.edu.pw.ee.overseer.utilities.URLConnectionUtility;
 
 public class LoginActivity extends AppCompatActivity {
     private LoginActivity mContext;
@@ -34,7 +35,10 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new LoginTask(mContext).execute(mLoginUsername.getText().toString(), mLoginPassword.getText().toString());
+                if(URLConnectionUtility.isNetworkAvaliable(mContext))
+                    new LoginTask(mContext).execute(mLoginUsername.getText().toString(), mLoginPassword.getText().toString());
+                else
+                    ToastUtility.makeError(mContext,"NETWORK_ERROR");
             }
         });
     }
@@ -50,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
                         .apply();
 
                 ExternalStorageUtility.createRootFolder();
-                ExternalStorageUtility.writeImage("avatar.png", response.getString("avatar"));
+                ExternalStorageUtility.writeImage("avatar/avatar_0.ovs", response.getString("avatar"));
 
                 Intent intent = new Intent(mContext, MainActivity.class);
                 mContext.startActivity(intent);

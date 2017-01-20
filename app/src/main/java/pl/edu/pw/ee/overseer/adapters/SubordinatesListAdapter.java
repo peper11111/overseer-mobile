@@ -1,12 +1,9 @@
 package pl.edu.pw.ee.overseer.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +16,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import pl.edu.pw.ee.overseer.R;
+import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 
 public class SubordinatesListAdapter extends ArrayAdapter<JSONObject> {
     int mResource;
@@ -37,9 +35,7 @@ public class SubordinatesListAdapter extends ArrayAdapter<JSONObject> {
             convertView = LayoutInflater.from(getContext()).inflate(mResource, parent, false);
 
         try {
-            byte[] image = Base64.decode(item.getString("avatar"), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getContext().getResources(), bitmap);
+            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getContext().getResources(), ExternalStorageUtility.getFileInputStream("avatar/avatar_" + item.getString("id") + ".ovs"));
             drawable.setCornerRadius(150);
 
             ImageView avatar = (ImageView) convertView.findViewById(R.id.subordinate_avatar);

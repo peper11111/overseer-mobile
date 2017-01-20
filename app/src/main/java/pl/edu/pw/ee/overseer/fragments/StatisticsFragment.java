@@ -14,9 +14,12 @@ import org.json.JSONObject;
 
 import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.adapters.StatisticsTabAdapter;
+import pl.edu.pw.ee.overseer.tasks.ProfileTask;
 import pl.edu.pw.ee.overseer.tasks.StatisticsTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
+import pl.edu.pw.ee.overseer.utilities.ToastUtility;
+import pl.edu.pw.ee.overseer.utilities.URLConnectionUtility;
 
 public class StatisticsFragment extends Fragment {
     private Activity mContext;
@@ -28,7 +31,7 @@ public class StatisticsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_statistics, container, false);
+        View v = inflater.inflate(R.layout.fragment_viewpager, container, false);
 
         mContext = getActivity();
         mContext.setTitle("Statistics");
@@ -43,11 +46,12 @@ public class StatisticsFragment extends Fragment {
         tabLayout.setupWithViewPager(mViewPager);
 
         try {
-            new StatisticsTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
-//            if (ExternalStorageUtility.exists("statistics.ovs"))
-//                asyncTaskResponse(ExternalStorageUtility.readJSONObject("statistics.ovs"));
-//            else
-//                new StatisticsTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+            if(URLConnectionUtility.isNetworkAvaliable(mContext))
+                new StatisticsTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+            else if(ExternalStorageUtility.exists("statistics.ovs"))
+                asyncTaskResponse(ExternalStorageUtility.readJSONObject("statistics.ovs"));
+            else
+                ToastUtility.makeError(mContext,"NETWORK_ERROR");
         } catch (Exception e) {
             e.printStackTrace();
         }

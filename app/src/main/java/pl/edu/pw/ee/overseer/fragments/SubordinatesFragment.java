@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,8 +19,12 @@ import java.util.ArrayList;
 
 import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.adapters.SubordinatesListAdapter;
+import pl.edu.pw.ee.overseer.tasks.StatisticsTask;
 import pl.edu.pw.ee.overseer.tasks.SubordinatesTask;
+import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
+import pl.edu.pw.ee.overseer.utilities.ToastUtility;
+import pl.edu.pw.ee.overseer.utilities.URLConnectionUtility;
 
 public class SubordinatesFragment extends Fragment {
     private Activity mContext;
@@ -41,6 +46,20 @@ public class SubordinatesFragment extends Fragment {
         ListView listView = (ListView) v.findViewById(R.id.subordinates_list);
         listView.setAdapter(mAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                JSONObject jsonObject = mAdapter.getItem(position);
+                Bundle bundle = new Bundle();
+                bundle.putString("subordinate", jsonObject.toString());
+
+                Fragment fragment = new DetailsFragment();
+                fragment.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.fragment_container, fragment).commit();
+            }
+        });
+
         mInfo = (TextView) v.findViewById(R.id.subordinates_info);
 
         if (mAdapter.getCount() == 0)
@@ -48,8 +67,16 @@ public class SubordinatesFragment extends Fragment {
         else
             mInfo.setVisibility(View.GONE);
 
-        //TODO jeżeli nie ma neta to wczytac z pliku
-        new SubordinatesTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+        try {
+            if (URLConnectionUtility.isNetworkAvaliable(mContext))
+                new SubordinatesTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+            else if (ExternalStorageUtility.exists("subordinates.ovs"))
+                asyncTaskResponse(ExternalStorageUtility.readJSONObject("subordinates.ovs"));
+            else
+                ToastUtility.makeError(mContext, "NETWORK_ERROR");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return v;
     }

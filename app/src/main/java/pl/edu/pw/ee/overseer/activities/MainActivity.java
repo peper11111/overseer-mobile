@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
     private Activity mContext;
     private SharedPreferencesUtility mSharedPreferencesUtility;
 
-    private boolean isWorktime;
+    private boolean isActive;
     private FloatingActionButton fab;
 
     @Override
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity
 
         mContext = this;
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
-        isWorktime = false;
+        isActive = false;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -55,18 +55,18 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isWorktime) {
+                if (isActive) {
                     new StopTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.stopService(new Intent(mContext, LocationService.class));
                     mContext.stopService(new Intent(mContext, WorkTimeService.class));
                     fab.setImageResource(R.drawable.ic_briefcase);
-                    isWorktime = false;
+                    isActive = false;
                 } else {
                     new StartTask().execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
                     mContext.startService(new Intent(mContext, LocationService.class));
                     mContext.startService(new Intent(mContext, WorkTimeService.class));
                     fab.setImageResource(R.drawable.ic_home);
-                    isWorktime = true;
+                    isActive = true;
                 }
             }
         });
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
         ((TextView) header.findViewById(R.id.drawer_email)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_EMAIL, ""));
 
         try {
-            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getResources(), ExternalStorageUtility.getFileInputStream("/avatar.png"));
+            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getResources(), ExternalStorageUtility.getFileInputStream("avatar/avatar_0.ovs"));
             drawable.setCornerRadius(150);
             ((ImageView) header.findViewById(R.id.drawer_avatar)).setImageDrawable(drawable);
         } catch (Exception e) {
@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
+            getSupportFragmentManager().popBackStack();
         } else {
             mContext.moveTaskToBack(true);
         }
@@ -143,15 +145,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void logout() {
-        new SharedPreferencesUtility(mContext)
-                .remove(SharedPreferencesUtility.KEY_TOKEN)
-                .remove(SharedPreferencesUtility.KEY_DIFF)
-                .remove(SharedPreferencesUtility.KEY_TIME)
-                .apply();
-        ExternalStorageUtility.delete("profile.ovs");
-        ExternalStorageUtility.delete("statistics.ovs");
-        if (isWorktime)
+        if (isActive)
             fab.performClick();
+        new SharedPreferencesUtility(mContext)
+                .remove(SharedPreferencesUtility.KEY_UPDATE)
+                .remove(SharedPreferencesUtility.KEY_TOKEN)
+                .remove(SharedPreferencesUtility.KEY_TIME)
+                .remove(SharedPreferencesUtility.KEY_DIFF)
+                .remove(SharedPreferencesUtility.KEY_EMAIL)
+                .remove(SharedPreferencesUtility.KEY_NAME)
+                .apply();
+        ExternalStorageUtility.deleteRootFolder();
         Intent intent = new Intent(mContext, LoginActivity.class);
         mContext.startActivity(intent);
         mContext.finish();

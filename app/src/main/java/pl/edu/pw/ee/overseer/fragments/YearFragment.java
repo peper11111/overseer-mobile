@@ -16,13 +16,13 @@ public class YearFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_year, container, false);
+        View v = inflater.inflate(R.layout.fragment_chart, container, false);
 
         StatisticsFragment parent = (StatisticsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
         try {
             if (parent.mStatistics != null) {
-                LineChart lineChart = (LineChart) v.findViewById(R.id.year_chart);
+                LineChart lineChart = (LineChart) v.findViewById(R.id.line_chart);
                 ChartUtility.createLineChart(parent.mStatistics.getJSONObject("current").getJSONObject("year"), parent.mStatistics.getJSONObject("previous").getJSONObject("year"), lineChart);
                 lineChart.invalidate();
             }

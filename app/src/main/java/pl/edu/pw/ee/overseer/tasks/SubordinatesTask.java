@@ -1,7 +1,9 @@
 package pl.edu.pw.ee.overseer.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import pl.edu.pw.ee.overseer.fragments.SubordinatesFragment;
@@ -28,10 +30,19 @@ public class SubordinatesTask extends AsyncTask<String, Void, JSONObject> {
     }
 
     @Override
-    protected void onPostExecute(JSONObject jsonObject) {
+    protected void onPostExecute(JSONObject response) {
         try {
-            ExternalStorageUtility.saveJSONObject("subordinates.ovs", jsonObject);
-            mContext.asyncTaskResponse(jsonObject);
+            JSONArray jsonArray = new JSONArray();
+            JSONArray responseArray = response.getJSONArray("subordinates");
+            for (int i = 0; i < responseArray.length(); i++) {
+                JSONObject subordinate = responseArray.getJSONObject(i);
+                ExternalStorageUtility.writeImage("avatar/avatar_" + subordinate.getString("id") + ".ovs", subordinate.getString("avatar"));
+                subordinate.remove("avatar");
+                jsonArray.put(subordinate);
+            }
+            response.put("subordinates", jsonArray);
+            ExternalStorageUtility.saveJSONObject("subordinates.ovs", response);
+            mContext.asyncTaskResponse(response);
         } catch (Exception e) {
             e.printStackTrace();
         }

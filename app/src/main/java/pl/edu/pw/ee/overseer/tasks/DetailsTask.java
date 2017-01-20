@@ -4,14 +4,15 @@ import android.os.AsyncTask;
 
 import org.json.JSONObject;
 
-import pl.edu.pw.ee.overseer.fragments.ProfileFragment;
+import pl.edu.pw.ee.overseer.fragments.DetailsFragment;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.URLConnectionUtility;
 
-public class ProfileTask extends AsyncTask<String, Void, JSONObject> {
-    private ProfileFragment mContext;
+public class DetailsTask extends AsyncTask<String, Void, JSONObject> {
+    private DetailsFragment mContext;
+    private Long mId;
 
-    public ProfileTask(ProfileFragment context) {
+    public DetailsTask(DetailsFragment context) {
         mContext = context;
     }
 
@@ -20,7 +21,9 @@ public class ProfileTask extends AsyncTask<String, Void, JSONObject> {
         try {
             JSONObject request = new JSONObject();
             request.put("token", params[0]);
-            return URLConnectionUtility.doPost("/profile", request);
+            mId = Long.parseLong(params[1]);
+            request.put("id", mId);
+            return URLConnectionUtility.doPost("/details", request);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -30,7 +33,7 @@ public class ProfileTask extends AsyncTask<String, Void, JSONObject> {
     @Override
     protected void onPostExecute(JSONObject jsonObject) {
         try {
-            ExternalStorageUtility.saveJSONObject("profile.ovs", jsonObject);
+            ExternalStorageUtility.saveJSONObject("detail/detail_" + mId + ".osv", jsonObject);
             mContext.asyncTaskResponse(jsonObject);
         } catch (Exception e) {
             e.printStackTrace();

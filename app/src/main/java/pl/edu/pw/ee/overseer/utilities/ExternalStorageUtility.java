@@ -7,9 +7,6 @@ import android.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,8 +19,13 @@ public class ExternalStorageUtility {
     private static final File ROOT = new File(Environment.getExternalStorageDirectory(), "Overseer");
 
     public static boolean createRootFolder() {
-        return ROOT.exists() || ROOT.mkdir();
+        return ROOT.exists() || (ROOT.mkdir() && new File(ROOT, "avatar").mkdir() && new File(ROOT, "detail").mkdir());
     }
+
+    public static boolean deleteRootFolder() {
+        return !ROOT.exists() || ROOT.delete();
+    }
+
 
     public static void writeImage(String path, String image) throws IOException {
         File file = new File(ROOT, path);

@@ -18,6 +18,8 @@ import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.tasks.ProfileTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
+import pl.edu.pw.ee.overseer.utilities.ToastUtility;
+import pl.edu.pw.ee.overseer.utilities.URLConnectionUtility;
 
 public class ProfileFragment extends Fragment {
     private Activity mContext;
@@ -34,10 +36,13 @@ public class ProfileFragment extends Fragment {
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
 
         try {
-            if (ExternalStorageUtility.exists("profile.ovs"))
+            if(URLConnectionUtility.isNetworkAvaliable(mContext))
+                new ProfileTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+            else if(ExternalStorageUtility.exists("profile.ovs"))
                 asyncTaskResponse(ExternalStorageUtility.readJSONObject("profile.ovs"));
             else
-                new ProfileTask(this).execute(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_TOKEN, ""));
+                ToastUtility.makeError(mContext,"NETWORK_ERROR");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,7 +52,7 @@ public class ProfileFragment extends Fragment {
 
     public void asyncTaskResponse(JSONObject response) {
         try {
-            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getResources(), ExternalStorageUtility.getFileInputStream("/avatar.png"));
+            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(getResources(), ExternalStorageUtility.getFileInputStream("avatar/avatar_0.ovs"));
             drawable.setCornerRadius(150);
             ((ImageView) mView.findViewById(R.id.profile_avatar)).setImageDrawable(drawable);
             ((TextView) mView.findViewById(R.id.profile_name)).setText(mSharedPreferencesUtility.getString(SharedPreferencesUtility.KEY_NAME, "-"));
