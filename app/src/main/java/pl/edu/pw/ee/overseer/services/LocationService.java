@@ -45,7 +45,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         createLocationRequest();
         mGoogleApiClient.connect();
         mSharedPreferencesUtility = new SharedPreferencesUtility(this);
-        mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_UPDATE, 0);
+        lastUpdate = mSharedPreferencesUtility.getLong(SharedPreferencesUtility.KEY_UPDATE, 0);
     }
 
     @Override

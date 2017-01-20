@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/location_date"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:gravity="fill_vertical"
+            android:text="2017-01-02 12:11:11"
+            android:textColor="@android:color/primary_text_light"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2">
+
+            <TextView
+                android:layout_width="25dp"
+                android:layout_height="match_parent"
+                android:gravity="fill_vertical"
+                android:text="lat:" />
+
+            <TextView
+                android:id="@+id/location_latitude"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="fill_vertical"
+                android:text="0.000000" />
+
+            <TextView
+                android:layout_width="25dp"
+                android:layout_height="match_parent"
+                android:gravity="fill_vertical"
+                android:text="lng:" />
+
+            <TextView
+                android:id="@+id/location_longitude"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="fill_vertical"
+                android:text="0.000000" />
+        </LinearLayout>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/subordinate_avatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="8dp"
+        android:src="@drawable/ic_map_marker_radius"
+        android:tint="#03A9F4" />
+</LinearLayout>

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 import pl.edu.pw.ee.overseer.R;
 import pl.edu.pw.ee.overseer.adapters.SubordinatesListAdapter;
-import pl.edu.pw.ee.overseer.tasks.StatisticsTask;
 import pl.edu.pw.ee.overseer.tasks.SubordinatesTask;
 import pl.edu.pw.ee.overseer.utilities.ExternalStorageUtility;
 import pl.edu.pw.ee.overseer.utilities.SharedPreferencesUtility;
@@ -36,14 +35,14 @@ public class SubordinatesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_subordinates, container, false);
+        View v = inflater.inflate(R.layout.fragment_list_view, container, false);
 
         mContext = getActivity();
         mContext.setTitle("Subordinates");
         mSharedPreferencesUtility = new SharedPreferencesUtility(mContext);
 
         mAdapter = new SubordinatesListAdapter(getContext(), R.layout.list_item_subordinates, new ArrayList<JSONObject>());
-        ListView listView = (ListView) v.findViewById(R.id.subordinates_list);
+        ListView listView = (ListView) v.findViewById(R.id.list_view);
         listView.setAdapter(mAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -60,7 +59,7 @@ public class SubordinatesFragment extends Fragment {
             }
         });
 
-        mInfo = (TextView) v.findViewById(R.id.subordinates_info);
+        mInfo = (TextView) v.findViewById(R.id.empty_list);
 
         if (mAdapter.getCount() == 0)
             mInfo.setVisibility(View.VISIBLE);

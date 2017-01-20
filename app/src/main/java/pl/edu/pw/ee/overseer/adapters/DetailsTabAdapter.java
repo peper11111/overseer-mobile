@@ -4,7 +4,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import pl.edu.pw.ee.overseer.fragments.DetailsLocationFragment;
 import pl.edu.pw.ee.overseer.fragments.DetailsProfileFragment;
+import pl.edu.pw.ee.overseer.fragments.DetailsWorkTimeFragment;
 
 public class DetailsTabAdapter extends FragmentPagerAdapter {
     public DetailsTabAdapter(FragmentManager fm) {
@@ -17,9 +19,9 @@ public class DetailsTabAdapter extends FragmentPagerAdapter {
             case 0:
                 return new DetailsProfileFragment();
             case 1:
-                return new DetailsProfileFragment();
+                return new DetailsWorkTimeFragment();
             case 2:
-                return new DetailsProfileFragment();
+                return new DetailsLocationFragment();
             default:
                 return null;
         }

@@ -22,8 +22,15 @@ public class ExternalStorageUtility {
         return ROOT.exists() || (ROOT.mkdir() && new File(ROOT, "avatar").mkdir() && new File(ROOT, "detail").mkdir());
     }
 
-    public static boolean deleteRootFolder() {
-        return !ROOT.exists() || ROOT.delete();
+    public static void deleteRootFolder() {
+        deleteRecursive(ROOT);
+    }
+
+    private static void deleteRecursive(File file) {
+        if (file.isDirectory())
+            for (File child : file.listFiles())
+                deleteRecursive(child);
+        file.delete();
     }
 
 
